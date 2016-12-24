@@ -1,0 +1,6 @@
+[package]
+name = "common"
+version = "17"
+
+[env]
+FOO = "foo from package"

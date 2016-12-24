@@ -1,0 +1,8 @@
+[package]
+name = "env_values_arent_strings"
+version = "17"
+
+[env]
+foo = "this value is fine"
+bar = "this value is fine too"
+baz = ["array", "of", "strings"]

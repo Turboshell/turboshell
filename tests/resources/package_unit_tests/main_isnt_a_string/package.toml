@@ -1,0 +1,4 @@
+[package]
+name = "main_isnt_a_string"
+version = "17"
+main = 25

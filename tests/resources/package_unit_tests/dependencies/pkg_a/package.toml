@@ -1,0 +1,7 @@
+[package]
+name = "pkg_a"
+version = "17"
+
+[dependencies]
+pkg_b = "local"
+pkg_d = "local"

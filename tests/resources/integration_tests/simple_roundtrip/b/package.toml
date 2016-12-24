@@ -1,0 +1,10 @@
+[package]
+name = "b"
+version = "17"
+
+[dependencies]
+common = "local"
+
+[env]
+FOO = "foo from package"
+BAR = "bar from package"

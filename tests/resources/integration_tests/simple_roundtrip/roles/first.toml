@@ -1,0 +1,9 @@
+[role]
+name = "first"
+
+[dependencies]
+a = "local"
+
+[env]
+FOO = "foo from first role"
+BAR = "bar from first role"

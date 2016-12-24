@@ -1,0 +1,6 @@
+[package]
+name = "c"
+version = "17"
+
+[dependencies]
+a = "local"

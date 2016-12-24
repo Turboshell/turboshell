@@ -1,0 +1,6 @@
+[package]
+name = "dependency_version_isnt_local"
+version = "17"
+
+[dependencies]
+foo = "25"

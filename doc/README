@@ -1,0 +1,43 @@
+ _              _              _ 
+| | _____ _   _| |_ ___   ___ | |
+| |/ / _ \ | | | __/ _ \ / _ \| |
+|   <  __/ |_| | || (_) | (_) | |
+|_|\_\___|\__, |\__\___/ \___/|_|
+          |___/                  
+
+# Produce a key with which to sign your code
+$ tsh keytool -o seedfile
+
+# Verify that your key is not corrupt and print the Public Key
+$ tsh keytool seedfile
+
+# Save your public key
+$ PUBLIC_KEY=`tsh keytool seedfile`
+
+                           _ _      
+  ___ ___  _ __ ___  _ __ (_) | ___ 
+ / __/ _ \| '_ ` _ \| '_ \| | |/ _ \
+| (_| (_) | | | | | | |_) | | |  __/
+ \___\___/|_| |_| |_| .__/|_|_|\___|
+                    |_|             
+
+# Produce a signed archive of your code
+$ tsh compile -d /path/to/code -o archive.tsar -s seedfile $ROLE1 $ROLE2 $ROLE3 etc.
+
+ _                           _   
+(_)_ __  ___ _ __   ___  ___| |_ 
+| | '_ \/ __| '_ \ / _ \/ __| __|
+| | | | \__ \ |_) |  __/ (__| |_ 
+|_|_| |_|___/ .__/ \___|\___|\__|
+            |_|                  
+
+# Extract the tarball from the archive for your debugging pleasure
+$ tsh inspect -k $PUBLIC_KEY archive.tsar -o archive.tar.gz
+
+_ __ _   _ _ __   
+| '__| | | | '_ \ 
+| |  | |_| | | | |
+|_|   \__,_|_| |_|
+                  
+# Run the code from your archive
+$ tsh run -k $PUBLIC_KEY archive.tsar

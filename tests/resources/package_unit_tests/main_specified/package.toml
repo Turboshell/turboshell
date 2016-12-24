@@ -1,0 +1,4 @@
+[package]
+name="main_specified"
+version="25"
+main = "this_is_the_main.sh"

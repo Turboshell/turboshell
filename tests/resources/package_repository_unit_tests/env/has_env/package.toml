@@ -1,0 +1,7 @@
+[package]
+name = "has_env"
+version = "17"
+
+[env]
+FOO = "foo from package"
+BAR = "bar from package"
