@@ -439,9 +439,15 @@ mod tests {
 
         // remove read (well... all) permissions from package.toml
         // I'm doing this in code here because git doesn't store permissions aside from +x
-        fs::set_permissions(basedir.join(name).join("package.toml"), fs::Permissions::from_mode(0o000)).unwrap();
+        let package_toml_file = basedir.join(name).join("package.toml");
+        let original_mode = fs::metadata(&package_toml_file).unwrap().permissions().mode();
+
+        fs::set_permissions(&package_toml_file, fs::Permissions::from_mode(0o000)).unwrap();
 
         let p = Package::from_file(&basedir, name);
+
+        // return original mode
+        fs::set_permissions(&package_toml_file, fs::Permissions::from_mode(original_mode)).unwrap();
 
         assert!(p.is_err());
 
