@@ -1,0 +1,42 @@
+#!/bin/sh
+
+set -e
+
+RELEASE=$1
+STABLE=$RELEASE-stable
+
+error() {
+    echo $@ >&2
+    exit 1
+}
+
+# verify $RELEASE is present
+if [ -z $RELEASE ]; then
+    error usage: $0 release-version
+fi
+
+# verify that everything is committed
+git diff-index --quiet HEAD -- || error you have uncommitted changes
+
+# verify that we're at HEAD of master
+if [ `git rev-parse --abbrev-ref HEAD` != "master" ]; then
+    error not on master branch
+fi
+
+# # verify that we're up to date with origin/master
+git fetch origin
+if [ -n "`git rev-list HEAD...origin/master`" ]; then
+    error HEAD differs from origin/master
+fi
+
+# cut the release!
+git checkout -b $STABLE
+sed -i"" "3s/.*/version = \"$RELEASE\"/" Cargo.toml
+cargo test
+git commit -m $RELEASE Cargo.toml Cargo.lock
+git tag -sm $RELEASE $RELEASE
+git push origin $STABLE
+git push origin $RELEASE
+
+# build artifacts!
+make release
