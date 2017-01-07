@@ -1,6 +1,6 @@
 [root]
 name = "turboshell"
-version = "0.0.0-snapshot"
+version = "0.1.0"
 dependencies = [
  "byteorder 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "cast 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
