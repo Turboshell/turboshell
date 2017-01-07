@@ -1,12 +1,13 @@
-TARGET=turboshell
+TARGET=release
 LIBSODIUM_RELEASE=1.0.11
 BASEDIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 export SODIUM_LIB_DIR := $(BASEDIR)/local/lib/
 export SODIUM_STATIC := yes
 
-turboshell: libsodium
-	cargo build --target=x86_64-unknown-linux-musl
+release:
+	rm -rf libsodium/ local/ target/ # clean out who-knows-what
+	$(MAKE) release*
 
 libsodium:
 	[ -d libsodium ] || git clone https://github.com/jedisct1/libsodium libsodium
@@ -19,7 +20,7 @@ libsodium:
 		$(MAKE) && \
 		$(MAKE) install
 
-release: libsodium
+release*: libsodium
 	cargo build --target=x86_64-unknown-linux-musl --release
 	strip target/x86_64-unknown-linux-musl/release/turboshell
 	mv target/x86_64-unknown-linux-musl/release/turboshell target/tsh
