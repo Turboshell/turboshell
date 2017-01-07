@@ -23,6 +23,9 @@ release: libsodium
 	cargo build --target=x86_64-unknown-linux-musl --release
 	strip target/x86_64-unknown-linux-musl/release/turboshell
 	mv target/x86_64-unknown-linux-musl/release/turboshell target/tsh
+	@echo -----------------------------------------------------------------
+	@echo && echo
+	@target/tsh --version
 
 clean:
 	rm -rf target/
