@@ -82,7 +82,20 @@ pub fn main<W: Write>(out: &mut W, pubkey_string: String, archive_string: String
     };
 
     // Create PublicKey
-    let pubkey = sign::PublicKey::from_slice(&pubkey_string.as_bytes().from_base64().unwrap()).unwrap();
+    let pubkey_bytes = match pubkey_string.as_bytes().from_base64() {
+        Ok(bytes) => bytes,
+        Err(_) => {
+            writeln!(&mut stderr, "error decoding pubkey \"{}\" as base64", pubkey_string).unwrap();
+            return 1;
+        }
+    };
+    let pubkey = match sign::PublicKey::from_slice(&pubkey_bytes) {
+        Some(key) => key,
+        None => {
+            writeln!(&mut stderr, "error creating PublicKey").unwrap();
+            return 1;
+        }
+    };
 
     // Create a place for the archive to be unpacked
     let tempdir = match tempdir::TempDir::new("turboshell") {
