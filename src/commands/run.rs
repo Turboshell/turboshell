@@ -85,15 +85,26 @@ pub fn main<W: Write>(out: &mut W, pubkey_string: String, archive_string: String
     let pubkey = sign::PublicKey::from_slice(&pubkey_string.as_bytes().from_base64().unwrap()).unwrap();
 
     // Create a place for the archive to be unpacked
-    let tempdir = tempdir::TempDir::new("turboshell").unwrap().into_path(); // TODO: remove into_path
-    //let basedir = &tempdir.path();
-    let basedir = &tempdir; // todo remove
+    let tempdir = match tempdir::TempDir::new("turboshell") {
+        Ok(value) => value,
+        Err(e) => {
+            writeln!(&mut stderr, "error creating temp dir: {}", e).unwrap();
+            return 1;
+        }
+    };
 
+    let basedir = match tempdir.path().canonicalize() {
+        Ok(value) => value,
+        Err(e) => {
+            writeln!(&mut stderr, "Can't canonicalize temp dir: {}", e).unwrap();
+            return 1;
+        }
+    };
 
     let tarball_bytes = unpack::unpack(&mut input, pubkey).unwrap();
-    unpack::explode(tarball_bytes.as_slice(), basedir);
+    unpack::explode(tarball_bytes.as_slice(), &basedir);
 
-    let runlist = match runlist::RunList::from_archive(basedir) {
+    let runlist = match runlist::RunList::from_archive(&basedir) {
         Ok(v) => v,
         Err(e) => {
             writeln!(&mut stderr, "error reading archive: {}", e).unwrap();
