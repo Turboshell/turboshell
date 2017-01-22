@@ -131,26 +131,23 @@ impl Package {
             None => Env::new()
         };
 
-        let dependencies = match config.lookup("dependencies") {
-            Some(deps) => match deps.as_table() {
-                Some(table) => {
+        let dependencies = match config.lookup("package.dependencies") {
+            Some(deps) => match deps.as_slice() {
+                Some(slice) => {
                     let mut m = BTreeMap::new();
 
-                    for (name, version) in table {
-                        let ver = match version.as_str() {
-                            Some(v) => v,
-                            None => return Err(Error::new(config_path, &format!("package dependency \"{}\" version isn't a string.", name)))
+                    for name in slice {
+                        match name.as_str() {
+                            Some(v) => {
+                                m.insert(v.to_string(), "local".to_string());
+                            },
+                            None => return Err(Error::new(config_path, &format!("package dependency \"{}\" isn't a string.", name)))
                         };
 
-                        if ver != "local" {
-                            return Err(Error::new(config_path, &format!("package dependency \"{}\" version must be \"local\".", name)))
-                        }
-
-                        m.insert(name.clone(), ver.to_string());
                     }
                     m
                 },
-                None => return Err(Error::new(config_path, "package `dependencies` isn't a table."))
+                None => return Err(Error::new(config_path, "package `dependencies` isn't an array."))
             },
             None => BTreeMap::new()
         };
@@ -179,25 +176,23 @@ impl Role {
         let role_path = basedir.as_ref().join("roles").join(format!("{}.toml", role));
         let config = try!(read_toml(&role_path));
 
-        let dependencies = match config.lookup("dependencies") {
-            Some(deps) => match deps.as_table() {
-                Some(table) => {
-                    let mut v: Vec<Package> = Vec::with_capacity(table.len());
-                    for (name, version) in table {
-                        let ver = match version.as_str() {
-                            Some(v) => v,
-                            None => return Err(Error::new(role_path, &format!("dependency {} version isn't a string.", name)))
+        let dependencies = match config.lookup("role.dependencies") {
+            Some(deps) => match deps.as_slice() {
+                Some(slice) => {
+                    let mut v: Vec<Package> = Vec::with_capacity(slice.len());
+
+                    for name in slice {
+                        match name.as_str() {
+                            Some(val) => {
+                                v.push(try!(Package::from_file(basedir, val)));
+                            },
+                            None => return Err(Error::new(role_path, &format!("role dependency \"{}\" isn't a string.", name)))
                         };
 
-                        if ver != "local" {
-                            return Err(Error::new(role_path, &format!("dependency {} version has to be \"local\".", name)))
-                        }
-
-                        v.push(try!(Package::from_file(basedir, name)));
                     }
                     v
                 },
-                None => return Err(Error::new(role_path, "`dependencies` key isn't a table."))
+                None => return Err(Error::new(role_path, "role `dependencies` isn't an array."))
             },
             None => vec![]
         };
@@ -613,41 +608,28 @@ mod tests {
     }
 
     #[test]
-    fn package_dependency_version_isnt_a_string() {
+    fn package_dependencies_isnt_an_array() {
         let basedir = resource("package_unit_tests");
-        let name = "dependency_version_isnt_a_string";
+        let name = "dependencies_isnt_an_array";
         let p = Package::from_file(&basedir, name);
 
         assert!(p.is_err());
 
         let err = p.err().unwrap();
         assert_eq!(err.path(), basedir.join(name).join("package.toml"));
-        assert_eq!(err.message(), "package dependency \"foo\" version isn't a string.");
+        assert_eq!(err.message(), "package `dependencies` isn't an array.");
     }
 
     #[test]
-    fn package_dependency_version_isnt_local() {
+    fn package_dependencies_isnt_an_array_of_strings() {
         let basedir = resource("package_unit_tests");
-        let name = "dependency_version_isnt_local";
+        let name = "dependencies_isnt_an_array_of_strings";
         let p = Package::from_file(&basedir, name);
 
         assert!(p.is_err());
 
         let err = p.err().unwrap();
         assert_eq!(err.path(), basedir.join(name).join("package.toml"));
-        assert_eq!(err.message(), "package dependency \"foo\" version must be \"local\".");
-    }
-
-    #[test]
-    fn package_dependencies_isnt_a_table() {
-        let basedir = resource("package_unit_tests");
-        let name = "dependencies_isnt_a_table";
-        let p = Package::from_file(&basedir, name);
-
-        assert!(p.is_err());
-
-        let err = p.err().unwrap();
-        assert_eq!(err.path(), basedir.join(name).join("package.toml"));
-        assert_eq!(err.message(), "package `dependencies` isn't a table.");
+        assert_eq!(err.message(), "failure to parse toml");
     }
 }

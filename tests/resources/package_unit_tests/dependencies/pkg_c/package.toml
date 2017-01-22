@@ -1,6 +1,4 @@
 [package]
 name = "pkg_c"
 version = "17"
-
-[dependencies]
-pkg_d = "local"
+dependencies = ["pkg_d"]

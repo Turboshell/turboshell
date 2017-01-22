@@ -1,8 +1,6 @@
 [role]
 name = "first"
-
-[dependencies]
-a = "local"
+dependencies = ["a"]
 
 [env]
 FOO = "foo from first role"

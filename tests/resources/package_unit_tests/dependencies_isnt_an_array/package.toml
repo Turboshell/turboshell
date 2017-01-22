@@ -1,0 +1,4 @@
+[package]
+name = "dependencies_isnt_an_array"
+version = "17"
+dependencies = "uh oh"

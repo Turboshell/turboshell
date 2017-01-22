@@ -1,8 +1,4 @@
 [package]
 name = "b"
 version = "17"
-
-
-[dependencies]
-c = "local"
-d = "local"
+dependencies = ["c", "d"]

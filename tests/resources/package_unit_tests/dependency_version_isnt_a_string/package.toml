@@ -1,6 +1,0 @@
-[package]
-name = "dependency_version_isnt_a_string"
-version = "17"
-
-[dependencies]
-foo = 1

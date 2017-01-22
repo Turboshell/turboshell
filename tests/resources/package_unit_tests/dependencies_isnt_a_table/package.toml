@@ -1,5 +1,0 @@
-dependencies = "uh oh"
-
-[package]
-name = "dependencies_isnt_a_table"
-version = "17"
